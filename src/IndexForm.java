@@ -14,6 +14,7 @@ public class IndexForm extends JDialog {
     private JButton btnSave;
     private JPanel IndexForm;
     private JButton btnClose;
+    private JButton btnView;
 
     public IndexForm(JFrame parent) {
         setTitle("Index Form");
@@ -22,27 +23,35 @@ public class IndexForm extends JDialog {
         setModal(true);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addItem();
-                showIndexForm();
             }
         });
+
         btnClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
+
+        btnView.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                showTableForm();
+            }
+        });
+
         setVisible(true);
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new IndexForm(null);
-
         });
     }
 
@@ -94,16 +103,18 @@ public class IndexForm extends JDialog {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+    public void showTableForm() {
+        dispose();
+        TableForm tableForm = new TableForm();
+        tableForm.setVisible(true);
+    }
 
-public void showIndexForm(){
-        IndexForm indexForm = new IndexForm(null);
-}
-    private Item addItemToDatabase(String item_name, int price, int quantity){
+    private Item addItemToDatabase(String item_name, int price, int quantity) {
         Item item = null;
         final String DB_URL = "jdbc:mysql://192.168.1.5:3306/norm_db";
         final String USERNAME = "root";
         final String PASSWORD = "pass";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD)){
+        try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD)) {
             String sql = "INSERT INTO items (item_name, price, quantity) VALUES (?,?,?)";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, item_name);
@@ -111,7 +122,7 @@ public void showIndexForm(){
             preparedStatement.setInt(3, quantity); // Use index 3 for quantity
 
             int addedRows = preparedStatement.executeUpdate();
-            if (addedRows > 0){
+            if (addedRows > 0) {
                 item = new Item();
                 item.item_name = item_name;
                 item.price = price;
@@ -122,5 +133,4 @@ public void showIndexForm(){
         }
         return item;
     }
-
 }
